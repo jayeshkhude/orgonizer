@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { FiClock, FiDownload, FiTrash2 } from 'react-icons/fi';
 import JSZip from 'jszip';
-import { fileTypeFolders } from '../utils/fileTypes';
+import { fileTypeFolders } from '../page';
 
 // Helper function to get the main category and subcategory for a file
 const getFileCategories = (fileName: string): { mainCategory: string; subCategory: string } => {
