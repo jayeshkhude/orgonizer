@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+    --primary: 0 0% 0%;
+    --secondary: 0 0% 90%;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-black text-white font-medium px-6 py-3 rounded-full 
+    hover:bg-opacity-90 transition-all duration-200;
+  }
+  
+  .btn-secondary {
+    @apply bg-white text-black font-medium px-6 py-3 rounded-full 
+    hover:bg-opacity-90 transition-all duration-200 border border-black;
+  }
+}
+
+body {
+  font-family: 'Space Grotesk', sans-serif;
+} 
