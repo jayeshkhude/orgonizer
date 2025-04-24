@@ -11,7 +11,7 @@ import { supabase } from './lib/supabase';
 import HistoryView from './components/HistoryView';
 
 // Enhanced file type mapping with subcategories
-const fileTypeFolders: { [key: string]: { [key: string]: string[] } } = {
+export const fileTypeFolders: { [key: string]: { [key: string]: string[] } } = {
   'code': {
     'javascript': ['.js', '.jsx', '.ts', '.tsx'],
     'python': ['.py', '.pyw', '.pyc', '.pyo', '.pyd'],
