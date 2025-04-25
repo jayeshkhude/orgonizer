@@ -130,6 +130,11 @@ export default function VideoOrganizer() {
   const [accessKey, setAccessKey] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [error, setError] = useState('');
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const handleAccessKeySubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -356,6 +361,10 @@ export default function VideoOrganizer() {
       setIsOrganizing(false);
     }
   };
+
+  if (!isMounted) {
+    return null; // Prevent hydration mismatch
+  }
 
   if (!isAuthenticated) {
     return (
