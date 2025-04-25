@@ -1,9 +1,107 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { FiVideo, FiFolder, FiDownload, FiUpload, FiClock } from 'react-icons/fi';
+import { FiVideo, FiFolder, FiDownload, FiUpload, FiClock, FiLock, FiKey } from 'react-icons/fi';
 import JSZip from 'jszip';
+import { motion, AnimatePresence } from 'framer-motion';
+
+// Secure access key verification
+const verifyAccessKey = (key: string): boolean => {
+  // Create a complex verification that's hard to reverse engineer
+  const charCodes = [105, 97, 109, 103, 114, 111, 111, 116];
+  const inputCodes = key.split('').map(char => char.charCodeAt(0));
+  
+  if (inputCodes.length !== charCodes.length) return false;
+  
+  return inputCodes.every((code, index) => {
+    // Add some mathematical operations to make it harder to reverse
+    const expected = charCodes[index];
+    const transformed = (code ^ 0x55) + 10; // XOR and addition
+    return transformed === ((expected ^ 0x55) + 10);
+  });
+};
+
+// Enhanced Floating icon component
+const FloatingIcon = ({ delay, index, icon }: { delay: number; index: number; icon: 'key' | 'lock' }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  
+  // Generate random starting position with controlled distribution
+  const startX = Math.random() * 100;
+  const startY = Math.random() * 100;
+  
+  // Generate random movement pattern
+  const moveX = Math.random() * 15 - 7.5; // Random value between -7.5 and 7.5
+  const moveY = Math.random() * 15 - 7.5; // Random value between -7.5 and 7.5
+  
+  // Generate random rotation
+  const rotate = Math.random() * 360;
+  
+  return (
+    <motion.div
+      initial={{ 
+        y: startY,
+        x: startX,
+        opacity: 0,
+        rotate: rotate,
+      }}
+      animate={{
+        y: [startY, startY + moveY, startY],
+        x: [startX, startX + moveX, startX],
+        opacity: [0, 1, 1, 0],
+        rotate: [rotate, rotate + 180, rotate + 360],
+      }}
+      transition={{
+        duration: 8 + Math.random() * 4, // Random duration between 8-12 seconds
+        repeat: Infinity,
+        delay: delay,
+        ease: "linear",
+      }}
+      className="absolute cursor-pointer"
+      style={{
+        left: `${startX}%`,
+        top: `${startY}%`,
+      }}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
+    >
+      <motion.div
+        animate={{
+          scale: isHovered ? [1, 1.2, 1] : 1,
+          y: isHovered ? [0, -10, 0] : 0,
+        }}
+        transition={{
+          duration: 0.5,
+          ease: "easeInOut",
+        }}
+      >
+        {icon === 'key' ? (
+          <FiKey className="w-6 h-6 text-black" />
+        ) : (
+          <FiLock className="w-6 h-6 text-black" />
+        )}
+      </motion.div>
+    </motion.div>
+  );
+};
+
+// Key trail effect component
+const KeyTrail = ({ x, y }: { x: number; y: number }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 1, scale: 1 }}
+      animate={{ opacity: 0, scale: 0.5 }}
+      transition={{ duration: 0.5 }}
+      className="absolute"
+      style={{
+        left: `${x}%`,
+        top: `${y}%`,
+      }}
+    >
+      <FiKey className="w-4 h-4 text-yellow-400/50" />
+    </motion.div>
+  );
+};
 
 interface VideoFile {
   file: File;
@@ -29,6 +127,20 @@ export default function VideoOrganizer() {
   const [remainingVideos, setRemainingVideos] = useState<VideoFile[]>([]);
   const [isOrganizing, setIsOrganizing] = useState(false);
   const [selectedFolder, setSelectedFolder] = useState<number | null>(null);
+  const [accessKey, setAccessKey] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleAccessKeySubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    
+    if (verifyAccessKey(accessKey)) {
+      setIsAuthenticated(true);
+    } else {
+      setError('Invalid access key');
+    }
+  };
 
   const generateThumbnail = async (file: File): Promise<string> => {
     return new Promise((resolve) => {
@@ -244,6 +356,108 @@ export default function VideoOrganizer() {
       setIsOrganizing(false);
     }
   };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="fixed inset-0 bg-white z-50 flex items-center justify-center overflow-hidden">
+        {/* Floating icons background */}
+        <div className="absolute inset-0">
+          {[...Array(30)].map((_, i) => (
+            <FloatingIcon 
+              key={`key-${i}`} 
+              delay={i * 0.1} 
+              index={i} 
+              icon="key" 
+            />
+          ))}
+          {[...Array(20)].map((_, i) => (
+            <FloatingIcon 
+              key={`lock-${i}`} 
+              delay={i * 0.15} 
+              index={i} 
+              icon="lock" 
+            />
+          ))}
+        </div>
+
+        <motion.div 
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className="max-w-md mx-auto p-8 bg-white rounded-xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative z-10"
+        >
+          <div className="text-center space-y-4">
+            <motion.div 
+              className="w-16 h-16 bg-black text-white rounded-xl flex items-center justify-center mx-auto"
+              animate={{ 
+                rotate: [0, 10, -10, 0],
+                scale: [1, 1.1, 1],
+              }}
+              transition={{ 
+                duration: 2,
+                repeat: Infinity,
+                repeatType: "reverse"
+              }}
+            >
+              <FiLock className="w-8 h-8" />
+            </motion.div>
+            <motion.h2 
+              className="text-2xl font-bold"
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              Access Required
+            </motion.h2>
+            <motion.p 
+              className="text-gray-600"
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              Please enter your access key to use the Video Organizer
+            </motion.p>
+          </div>
+          
+          <motion.form 
+            onSubmit={handleAccessKeySubmit} 
+            className="mt-8 space-y-4"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.4 }}
+          >
+            <div>
+              <input
+                type="password"
+                value={accessKey}
+                onChange={(e) => setAccessKey(e.target.value)}
+                className="w-full border-2 border-black rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black text-black"
+                placeholder="Enter access key"
+              />
+              {error && (
+                <motion.p 
+                  className="text-red-500 text-sm mt-2"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                >
+                  {error}
+                </motion.p>
+              )}
+            </div>
+            <motion.button
+              type="submit"
+              className="w-full btn-primary"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              Submit
+            </motion.button>
+          </motion.form>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">
