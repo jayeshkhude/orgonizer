@@ -878,7 +878,7 @@ export default function Home() {
                       exit={{ opacity: 0 }}
                     >
                       <motion.div 
-                        className="bg-white rounded-2xl p-8 max-w-2xl w-full border border-black/10"
+                        className="bg-white rounded-2xl p-8 w-[800px] h-[600px] border border-black/10 shadow-lg flex flex-col"
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.9, opacity: 0 }}
@@ -887,29 +887,36 @@ export default function Home() {
                           <h3 className="text-2xl font-semibold">Preview</h3>
                           <button 
                             onClick={() => setShowPreview(false)}
-                            className="text-gray-600 hover:text-black"
+                            className="text-gray-600 hover:text-black transition-colors"
                           >
                             <FiX size={24} />
                           </button>
                         </div>
 
-                        <div className="space-y-4">
+                        <div className="flex-1 space-y-6 overflow-y-auto pr-4">
                           <div>
-                            <h4 className="text-lg font-medium mb-2">Organized Files</h4>
-                            <ul className="space-y-2">
+                            <h4 className="text-lg font-medium mb-3">Organized Files</h4>
+                            <ul className="space-y-2 max-h-[200px] overflow-y-auto bg-gray-50 rounded-lg p-3">
                               {previewData.files.map((file, index) => (
-                                <li key={index} className="text-gray-600">{file.name}</li>
+                                <li key={index} className="text-gray-600 flex items-center gap-2">
+                                  {getFileIcon(file.type)}
+                                  <span className="truncate">{file.name}</span>
+                                </li>
                               ))}
                             </ul>
                           </div>
 
                           <div>
-                            <h4 className="text-lg font-medium mb-2">Summary</h4>
-                            <p className="text-gray-600">{previewData.summary}</p>
+                            <h4 className="text-lg font-medium mb-3">Summary</h4>
+                            <div className="bg-gray-50 rounded-lg p-3">
+                              <p className="text-gray-600">{previewData.summary}</p>
+                            </div>
                           </div>
+                        </div>
 
+                        <div className="mt-6 pt-6 border-t border-gray-200">
                           <button
-                            className="btn-primary w-full mt-6"
+                            className="btn-primary w-full"
                             onClick={handleDownload}
                           >
                             Download Organized Files
