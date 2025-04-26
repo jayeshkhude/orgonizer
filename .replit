@@ -1,0 +1,24 @@
+run = "npm run replit:dev"
+hidden = [".next", "node_modules"]
+entrypoint = "app/page.tsx"
+
+[nix]
+channel = "stable-22_11"
+
+[env]
+PATH = "/home/runner/.local/bin:/home/runner/.nix-profile/bin:/home/runner/.nix-profile/sbin:/nix/var/nix/profiles/default/bin:/nix/var/nix/profiles/default/sbin:/nix/var/nix/profiles/system/bin:/nix/var/nix/profiles/system/sbin:/run/current-system/sw/bin:/run/current-system/sw/sbin"
+
+[packager]
+language = "nodejs"
+
+[packager.features]
+packageSearch = true
+guessImports = true
+enabledForHosting = false
+
+[deployment]
+run = ["sh", "-c", "npm run build && npm run start"]
+
+nix = [
+  "nodejs-18_x"
+] 

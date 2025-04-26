@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { FiArrowLeft, FiVideo, FiFolder, FiClock, FiCalendar } from 'react-icons/fi';
+import { FiArrowLeft, FiVideo, FiFolder, FiClock, FiCalendar, FiLock } from 'react-icons/fi';
 import { GiCrown } from 'react-icons/gi';
 import { motion, AnimatePresence } from 'framer-motion';
 import VideoOrganizer from './VideoOrganizer';
@@ -31,7 +31,7 @@ export default function VideoOrganizerPage() {
               <span className="font-medium">Back to Home</span>
             </Link>
             <div className="flex items-center gap-2">
-              <GiCrown className="w-6 h-6 text-yellow-400 animate-pulse" />
+              <FiLock className="w-6 h-6 text-yellow-400" />
               <h1 className="text-xl font-bold">Video Organizer</h1>
             </div>
           </div>
@@ -51,7 +51,7 @@ export default function VideoOrganizerPage() {
             <div className="flex items-center justify-center gap-4 mb-6">
               <FiVideo className="w-12 h-12 text-black" />
               <h2 className="text-5xl font-bold text-black tracking-tight">Video Organizer</h2>
-              <GiCrown className="w-12 h-12 text-yellow-500" />
+              <FiLock className="w-12 h-12 text-yellow-500" />
             </div>
             <p className="text-xl text-black max-w-2xl mx-auto font-medium">
               Automatically organize your videos by timestamp, create custom folders, and manage your video collection efficiently.

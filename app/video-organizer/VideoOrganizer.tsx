@@ -2,9 +2,10 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { FiVideo, FiFolder, FiDownload, FiUpload, FiClock, FiLock, FiKey } from 'react-icons/fi';
+import { FiVideo, FiFolder, FiDownload, FiUpload, FiClock, FiLock, FiKey, FiArrowLeft } from 'react-icons/fi';
 import JSZip from 'jszip';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 
 // Secure access key verification
 const verifyAccessKey = (key: string): boolean => {
@@ -130,11 +131,6 @@ export default function VideoOrganizer() {
   const [accessKey, setAccessKey] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [error, setError] = useState('');
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   const handleAccessKeySubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -362,13 +358,23 @@ export default function VideoOrganizer() {
     }
   };
 
-  if (!isMounted) {
-    return null; // Prevent hydration mismatch
-  }
-
   if (!isAuthenticated) {
     return (
-      <div className="fixed inset-0 bg-white z-50 flex items-center justify-center overflow-hidden">
+      <div className="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center overflow-hidden">
+        {/* Back Button */}
+        <div className="absolute top-4 left-4 z-20">
+          <Link href="/">
+            <motion.button
+              className="btn-secondary flex items-center gap-2"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <FiArrowLeft className="w-4 h-4" />
+              Back to Home
+            </motion.button>
+          </Link>
+        </div>
+
         {/* Floating icons background */}
         <div className="absolute inset-0">
           {[...Array(30)].map((_, i) => (
