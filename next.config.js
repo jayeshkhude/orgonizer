@@ -49,7 +49,6 @@ const nextConfig = {
   },
   // Enable static optimization
   experimental: {
-    optimizeCss: true,
     scrollRestoration: true,
   },
   // Enable compression
