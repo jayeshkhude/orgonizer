@@ -5,10 +5,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build --no-lint",
-    "start": "next start -p $PORT",
+    "start": "node .next/standalone/server.js",
     "lint": "next lint",
     "replit:dev": "next dev -p $PORT",
-    "replit:start": "next start -p $PORT"
+    "replit:start": "node .next/standalone/server.js"
   },
   "dependencies": {
     "@heroicons/react": "^2.1.1",
