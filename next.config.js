@@ -5,6 +5,33 @@ const nextConfig = {
   images: {
     domains: ['localhost'],
     formats: ['image/avif', 'image/webp'],
+    unoptimized: true,
+  },
+  // Disable all experimental features
+  experimental: {
+    optimizeCss: false,
+    scrollRestoration: false,
+  },
+  // Configure for static generation
+  output: 'standalone',
+  // Ensure proper static file handling
+  distDir: '.next',
+  // Configure page extensions
+  pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
+  // Disable CSS optimization
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.optimization.splitChunks.cacheGroups = {
+        ...config.optimization.splitChunks.cacheGroups,
+        styles: {
+          name: 'styles',
+          test: /\.css$/,
+          chunks: 'all',
+          enforce: true,
+        },
+      }
+    }
+    return config
   },
   async headers() {
     return [
@@ -34,28 +61,11 @@ const nextConfig = {
           {
             key: 'Referrer-Policy',
             value: 'origin-when-cross-origin'
-          },
-          {
-            key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=()'
-          },
-          {
-            key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:;"
           }
         ],
       },
     ]
   },
-  // Enable static optimization
-  experimental: {
-    optimizeCss: true,
-    scrollRestoration: true,
-  },
-  // Enable compression
-  compress: true,
-  // Enable production source maps
-  productionBrowserSourceMaps: true,
 }
 
 module.exports = nextConfig 
