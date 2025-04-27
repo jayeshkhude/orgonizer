@@ -31,7 +31,7 @@ export default function VideoOrganizerPage() {
               <span className="font-medium">Back to Home</span>
             </Link>
             <div className="flex items-center gap-2">
-              <FiLock className="w-6 h-6 text-yellow-400" />
+              <FiLock className="w-6 h-6 text-black" />
               <h1 className="text-xl font-bold">Video Organizer</h1>
             </div>
           </div>

@@ -7,6 +7,12 @@ import JSZip from 'jszip';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 
+// Google Drive API configuration
+const CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
+const DISCOVERY_DOCS = ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'];
+const SCOPES = 'https://www.googleapis.com/auth/drive.readonly';
+
 // Secure access key verification
 const verifyAccessKey = (key: string): boolean => {
   // Create a complex verification that's hard to reverse engineer
@@ -131,6 +137,8 @@ export default function VideoOrganizer() {
   const [accessKey, setAccessKey] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [error, setError] = useState('');
+  const [showFolderDialog, setShowFolderDialog] = useState(false);
+  const [newFolderName, setNewFolderName] = useState('');
 
   const handleAccessKeySubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -191,17 +199,25 @@ export default function VideoOrganizer() {
   });
 
   const createFolder = () => {
-    const newFolder: Folder = {
-      name: `Folder ${folders.length + 1}`,
-      date: '',
-      startTime: '',
-      startPeriod: 'AM',
-      endTime: '',
-      endPeriod: 'AM',
-      videos: []
-    };
-    setFolders(prev => [...prev, newFolder]);
-    setSelectedFolder(folders.length);
+    setShowFolderDialog(true);
+  };
+
+  const handleCreateFolder = () => {
+    if (newFolderName.trim()) {
+      const newFolder: Folder = {
+        name: newFolderName.trim(),
+        date: '',
+        startTime: '',
+        startPeriod: 'AM',
+        endTime: '',
+        endPeriod: 'AM',
+        videos: []
+      };
+      setFolders(prev => [...prev, newFolder]);
+      setSelectedFolder(folders.length);
+      setNewFolderName('');
+      setShowFolderDialog(false);
+    }
   };
 
   const updateFolder = (index: number, updates: Partial<Folder>) => {
@@ -478,7 +494,7 @@ export default function VideoOrganizer() {
     <div className="max-w-6xl mx-auto space-y-8">
       {/* Header */}
       <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold">Video Organizer</h1>
+        <h1 className="text-4xl font-bold text-black">Video Organizer</h1>
         <p className="text-gray-600">Organize your videos by date and time</p>
       </div>
 
@@ -505,13 +521,10 @@ export default function VideoOrganizer() {
         {/* Folders Section */}
         <div className="lg:col-span-2 space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold">Folders</h2>
-            <div className="flex gap-2">
+            <h2 className="text-2xl font-bold text-black">Folders</h2>
+            <div>
               <button onClick={createFolder} className="btn-primary">
                 Create New Folder
-              </button>
-              <button onClick={organizeVideos} className="btn-primary">
-                Organize Videos
               </button>
             </div>
           </div>
@@ -531,7 +544,7 @@ export default function VideoOrganizer() {
                       type="text"
                       value={folder.name}
                       onChange={(e) => updateFolder(index, { name: e.target.value })}
-                      className="text-xl font-semibold border-b focus:outline-none focus:border-black w-full"
+                      className="text-xl font-semibold border-b focus:outline-none focus:border-black w-full text-black"
                       placeholder="Folder Name"
                     />
                     <span className="text-sm text-gray-500 ml-2">
@@ -677,6 +690,57 @@ export default function VideoOrganizer() {
           )}
         </button>
       </div>
+
+      {/* Folder Creation Dialog */}
+      <AnimatePresence>
+        {showFolderDialog && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-xl p-6 w-full max-w-md"
+            >
+              <h3 className="text-xl font-bold mb-4 text-black">Create New Folder</h3>
+              <input
+                type="text"
+                value={newFolderName}
+                onChange={(e) => setNewFolderName(e.target.value)}
+                placeholder="Enter folder name"
+                className="w-full border-2 border-black rounded-lg px-4 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-black text-black placeholder-gray-500"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleCreateFolder();
+                  }
+                }}
+              />
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={() => {
+                    setShowFolderDialog(false);
+                    setNewFolderName('');
+                  }}
+                  className="btn-secondary text-black"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleCreateFolder}
+                  disabled={!newFolderName.trim()}
+                  className="btn-primary text-white"
+                >
+                  Create
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 } 
